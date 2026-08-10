@@ -1,0 +1,151 @@
+-- ============================================
+-- EXPERIMENT 1
+-- CREATE TABLE AS SELECT AND ALTER TABLE
+-- ============================================
+
+-- Original Student table
+CREATE TABLE Student20 (
+    Reg_No NUMBER(10),
+    Name VARCHAR2(30),
+    Department VARCHAR2(20),
+    Address VARCHAR2(50),
+    Email_Address VARCHAR2(50),
+    DOB DATE
+);
+
+-- Insert sample student data
+INSERT INTO Student20 VALUES
+(205, 'Harini', 'CSE', 'Chennai', 'harini@gmail.com', DATE '2005-05-10');
+
+INSERT INTO Student20 VALUES
+(184, 'Lalitha Iyer', 'CSE', 'Madurai', 'lalithaiyer@gmail.com', DATE '2004-08-15');
+
+INSERT INTO Student20 VALUES
+(178, 'Bhavana', 'CSE', 'Coimbatore', 'bhavana@gmail.com', DATE '2005-01-20');
+
+COMMIT;
+
+-- Display original table
+SELECT * FROM Student20;
+
+
+-- ============================================
+-- 1. CREATE TABLE FROM ANOTHER TABLE
+-- ============================================
+
+CREATE TABLE Student21 AS
+SELECT * FROM Student20;
+
+SELECT * FROM Student21;
+
+
+-- ============================================
+-- 2. CREATE TABLE WITH SELECTED COLUMNS
+-- ============================================
+
+CREATE TABLE Student22 AS
+SELECT Reg_No, Name, Department, Email_Address
+FROM Student20;
+
+SELECT * FROM Student22;
+
+
+-- ============================================
+-- 3. CREATE TABLE WITHOUT RECORDS
+-- ============================================
+
+CREATE TABLE Student23 AS
+SELECT * FROM Student20
+WHERE 1=0;
+
+SELECT * FROM Student23;
+
+
+-- ============================================
+-- 4. SELECTED COLUMNS WITHOUT RECORDS
+-- ============================================
+
+CREATE TABLE Student24 AS
+SELECT Reg_No, Name, Department, Address
+FROM Student20
+WHERE 1=0;
+
+SELECT * FROM Student24;
+
+
+-- ============================================
+-- 5. MODIFY SINGLE COLUMN
+-- ============================================
+
+ALTER TABLE Student20
+MODIFY Name VARCHAR2(40);
+
+
+-- ============================================
+-- 6. MODIFY MULTIPLE COLUMNS
+-- ============================================
+
+ALTER TABLE Student20
+MODIFY (Address VARCHAR2(70), Email_Address VARCHAR2(80));
+
+
+-- ============================================
+-- 7. INCREASE COLUMN WIDTH
+-- ============================================
+
+ALTER TABLE Student20
+MODIFY Address VARCHAR2(100);
+
+
+-- ============================================
+-- 8. ADD SINGLE COLUMN
+-- ============================================
+
+ALTER TABLE Student20
+ADD Phone NUMBER(10);
+
+
+-- ============================================
+-- 9. ADD MULTIPLE COLUMNS
+-- ============================================
+
+ALTER TABLE Student20
+ADD (Gender CHAR(1), Age NUMBER(3));
+
+
+-- ============================================
+-- 10. DROP SINGLE COLUMN
+-- ============================================
+
+ALTER TABLE Student20
+DROP COLUMN Phone;
+
+
+-- ============================================
+-- 11. DROP MULTIPLE COLUMNS
+-- ============================================
+
+ALTER TABLE Student20
+DROP COLUMN Gender;
+
+ALTER TABLE Student20
+DROP COLUMN Age;
+
+
+-- ============================================
+-- DISPLAY TABLE STRUCTURE
+-- ============================================
+
+DESC Student20;
+
+
+-- ============================================
+-- DISPLAY TABLE DATA
+-- ============================================
+
+SELECT * FROM Student20;
+REG_NO   NAME           DEPARTMENT   ADDRESS      EMAIL_ADDRESS              DOB
+-------  -------------  -----------  -----------  -------------------------  ----------
+205      Harini         CSE          Chennai      harini@gmail.com            10-MAY-05
+184      Lalitha Iyer   CSE          Madurai      lalithaiyer@gmail.com      15-AUG-04
+178      Bhavana        CSE          Coimbatore   bhavana@gmail.com           20-JAN-05
