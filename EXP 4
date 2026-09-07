@@ -1,0 +1,147 @@
+
+
+CREATE TABLE EMPLOYEE
+(
+    EMP_ID NUMBER(5) PRIMARY KEY,
+    EMP_NAME VARCHAR2(30),
+    DEPARTMENT VARCHAR2(20),
+    CITY VARCHAR2(20),
+    SALARY NUMBER(8)
+);
+
+-- Output:
+-- Table created.
+
+
+-- Step 2: Insert records
+
+INSERT INTO EMPLOYEE VALUES
+(101, 'M.HARINI', 'CSE', 'HYDERABAD', 500000);
+
+INSERT INTO EMPLOYEE VALUES
+(102, 'M.HARIKA', 'MBA', 'CHENNAI', 200000);
+
+INSERT INTO EMPLOYEE VALUES
+(103, 'HARSHITHA', 'MBA', 'BENGULURU', 300000);
+
+-- Output:
+-- 1 row created.
+-- 1 row created.
+-- 1 row created.
+
+
+-- DCL COMMANDS
+
+-- Step 3: Grant SELECT privilege to SCOTT
+
+GRANT SELECT
+ON EMPLOYEE
+TO SCOTT;
+
+-- Output:
+-- Grant succeeded.
+
+
+-- Step 4: Grant multiple privileges
+
+GRANT SELECT, INSERT, UPDATE
+ON EMPLOYEE
+TO SCOTT;
+
+-- Output:
+-- Grant succeeded.
+
+
+-- Step 5: Revoke INSERT privilege from SCOTT
+
+REVOKE INSERT
+ON EMPLOYEE
+FROM SCOTT;
+
+-- Output:
+-- Revoke succeeded.
+
+
+-- TCL COMMANDS
+
+-- Step 6: Insert a new record and COMMIT
+
+INSERT INTO EMPLOYEE VALUES
+(104, 'RAHUL', 'CSE', 'CHENNAI', 250000);
+
+-- Output:
+-- 1 row created.
+
+COMMIT;
+
+-- Output:
+-- Commit complete.
+
+
+-- Step 7: Create a SAVEPOINT
+
+INSERT INTO EMPLOYEE VALUES
+(105, 'PRIYA', 'MBA', 'HYDERABAD', 280000);
+
+-- Output:
+-- 1 row created.
+
+SAVEPOINT SP1;
+
+-- Output:
+-- Savepoint created.
+
+
+-- Step 8: Insert another record
+
+INSERT INTO EMPLOYEE VALUES
+(106, 'KIRAN', 'CSE', 'BENGULURU', 320000);
+
+-- Output:
+-- 1 row created.
+
+
+-- Step 9: Rollback to SAVEPOINT
+
+ROLLBACK TO SP1;
+
+-- Output:
+-- Rollback complete.
+
+
+-- Step 10: Verify records
+
+SELECT * FROM EMPLOYEE;
+
+-- Output:
+-- EMP_ID  EMP_NAME    DEPARTMENT  CITY        SALARY
+-- ------  ----------  ----------  ----------  ------
+-- 101     M.HARINI    CSE         HYDERABAD   500000
+-- 102     M.HARIKA    MBA         CHENNAI     200000
+-- 103     HARSHITHA   MBA         BENGULURU   300000
+-- 104     RAHUL       CSE         CHENNAI     250000
+-- 105     PRIYA       MBA         HYDERABAD   280000
+--
+-- 106 KIRAN is not displayed because the transaction
+-- was rolled back to SAVEPOINT SP1.
+
+
+-- Step 11: Rollback the remaining uncommitted changes
+
+ROLLBACK;
+
+-- Output:
+-- Rollback complete.
+
+
+-- Step 12: Final verification
+
+SELECT * FROM EMPLOYEE;
+
+-- Output:
+-- EMP_ID  EMP_NAME    DEPARTMENT  CITY        SALARY
+-- ------  ----------  ----------  ----------  ------
+-- 101     M.HARINI    CSE         HYDERABAD   500000
+-- 102     M.HARIKA    MBA         CHENNAI     200000
+-- 103     HARSHITHA   MBA         BENGULURU   300000
+-- 104     RAHUL       CSE         CHENNAI     250000
