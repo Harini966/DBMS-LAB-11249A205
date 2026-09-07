@@ -1,0 +1,115 @@
+CREATE TABLE DEPARTMENT
+(
+ DEPT_ID NUMBER(3),
+ DEPT_NAME VARCHAR2(30),
+ CONSTRAINT PK_DEPT
+ PRIMARY KEY (DEPT_ID)
+);
+
+Output:
+Table created.
+
+CREATE TABLE EMPLOYEE
+(
+ EMP_ID NUMBER(5),
+ EMP_NAME VARCHAR2(30) CONSTRAINT NN_EMPNAME NOT NULL,
+ EMAIL VARCHAR2(50),
+ SALARY NUMBER(8),
+ DEPT_ID NUMBER(3),
+ CONSTRAINT PK_EMP PRIMARY KEY (EMP_ID),
+ CONSTRAINT UK_EMAIL UNIQUE (EMAIL),
+ CONSTRAINT CK_SALARY CHECK (SALARY >= 10000),
+ CONSTRAINT FK_DEPT FOREIGN KEY (DEPT_ID)
+ REFERENCES DEPARTMENT(DEPT_ID)
+);
+
+Output:
+Table created.
+
+INSERT INTO DEPARTMENT VALUES (101,'CSE');
+INSERT INTO DEPARTMENT VALUES (102,'MBA');
+
+Output:
+1 row created.
+1 row created.
+
+INSERT INTO EMPLOYEE
+VALUES (1001,'M.HARINI','harini@gmail.com',500000,101);
+
+INSERT INTO EMPLOYEE
+VALUES (1002,'M.HARIKA','harika@gmail.com',200000,102);
+
+INSERT INTO EMPLOYEE
+VALUES (1003,'HARSHITHA','harshitha@gmail.com',300000,102);
+
+Output:
+1 row created.
+1 row created.
+1 row created.
+
+INSERT INTO EMPLOYEE
+VALUES (1004,NULL,'divya@gmail.com',25000,101);
+
+Output:
+ERROR at line 1:
+ORA-01400: cannot insert NULL into ("EMPLOYEE"."EMP_NAME")
+
+INSERT INTO EMPLOYEE
+VALUES (1005,'KAVI','harini@gmail.com',28000,101);
+
+Output:
+ERROR at line 1:
+ORA-00001: unique constraint (UK_EMAIL) violated
+
+INSERT INTO EMPLOYEE
+VALUES (1006,'RAVI','ravi@gmail.com',8000,101);
+
+Output:
+ERROR at line 1:
+ORA-02290: check constraint (CK_SALARY) violated
+
+INSERT INTO EMPLOYEE
+VALUES (1007,'SURESH','suresh@gmail.com',25000,105);
+
+Output:
+ERROR at line 1:
+ORA-02291: integrity constraint (FK_DEPT) violated
+parent key not found
+
+INSERT INTO EMPLOYEE
+VALUES (1001,'MANOJ','manoj@gmail.com',30000,101);
+
+Output:
+ERROR at line 1:
+ORA-00001: unique constraint (PK_EMP) violated
+
+SELECT * FROM EMPLOYEE;
+
+Output:
+
+EMP_ID  EMP_NAME    EMAIL                SALARY  DEPT_ID
+------  ----------  -------------------  ------  -------
+1001    M.HARINI    harini@gmail.com     500000  101
+1002    M.HARIKA    harika@gmail.com     200000  102
+1003    HARSHITHA   harshitha@gmail.com  300000  102
+
+DESC DEPARTMENT;
+
+Output:
+
+Name         Null?    Type
+------------ -------- ----------------
+DEPT_ID      NOT NULL NUMBER(3)
+DEPT_NAME             VARCHAR2(30)
+
+DESC EMPLOYEE;
+
+Output:
+
+Name         Null?    Type
+------------ -------- ----------------
+EMP_ID       NOT NULL NUMBER(5)
+EMP_NAME     NOT NULL VARCHAR2(30)
+EMAIL                 VARCHAR2(50)
+SALARY                NUMBER(8)
+DEPT_ID               NUMBER(3)
