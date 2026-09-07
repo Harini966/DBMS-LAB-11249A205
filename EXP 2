@@ -1,0 +1,156 @@
+
+CREATE TABLE EMPLOYEE
+(
+    EMP_ID NUMBER(5) PRIMARY KEY,
+    EMP_NAME VARCHAR2(30),
+    DEPARTMENT VARCHAR2(20),
+    CITY VARCHAR2(20),
+    SALARY NUMBER(8)
+);
+
+-- Output:
+-- Table created.
+
+
+-- Step 2: Insert records
+
+INSERT INTO EMPLOYEE VALUES
+(101, 'M.HARINI', 'CSE', 'HYDERABAD', 500000);
+
+INSERT INTO EMPLOYEE VALUES
+(102, 'M.HARIKA', 'MBA', 'CHENNAI', 200000);
+
+INSERT INTO EMPLOYEE VALUES
+(103, 'HARSHITHA', 'MBA', 'BENGULURU', 300000);
+
+-- Output:
+-- 1 row created.
+-- 1 row created.
+-- 1 row created.
+
+
+-- Step 3: View all records
+
+SELECT * FROM EMPLOYEE;
+
+-- Output:
+-- EMP_ID  EMP_NAME    DEPARTMENT  CITY        SALARY
+-- ------  ----------  ----------  ----------  ------
+-- 101     M.HARINI    CSE         HYDERABAD   500000
+-- 102     M.HARIKA    MBA         CHENNAI     200000
+-- 103     HARSHITHA   MBA         BENGULURU   300000
+
+
+-- Step 4: Update record based on condition
+-- Increase M.HARIKA's salary to 250000
+
+UPDATE EMPLOYEE
+SET SALARY = 250000
+WHERE EMP_ID = 102;
+
+-- Output:
+-- 1 row updated.
+
+
+-- Verify the update
+
+SELECT * FROM EMPLOYEE
+WHERE EMP_ID = 102;
+
+-- Output:
+-- EMP_ID  EMP_NAME   DEPARTMENT  CITY      SALARY
+-- ------  ---------  ----------  --------  ------
+-- 102     M.HARIKA   MBA         CHENNAI   250000
+
+
+-- Step 5: Delete record based on condition
+-- Delete employee belonging to CSE department
+
+DELETE FROM EMPLOYEE
+WHERE DEPARTMENT = 'CSE';
+
+-- Output:
+-- 1 row deleted.
+
+
+-- Verify deletion
+
+SELECT * FROM EMPLOYEE;
+
+-- Output:
+-- EMP_ID  EMP_NAME    DEPARTMENT  CITY        SALARY
+-- ------  ----------  ----------  ----------  ------
+-- 102     M.HARIKA    MBA         CHENNAI     250000
+-- 103     HARSHITHA   MBA         BENGULURU   300000
+
+
+-- Step 6: Alter table - Add EMAIL column
+
+ALTER TABLE EMPLOYEE
+ADD EMAIL VARCHAR2(40);
+
+-- Output:
+-- Table altered.
+
+
+-- Describe the table
+
+DESC EMPLOYEE;
+
+-- Output:
+-- Name        Null?    Type
+-- ----------- -------- ----------------
+-- EMP_ID      NOT NULL NUMBER(5)
+-- EMP_NAME             VARCHAR2(30)
+-- DEPARTMENT           VARCHAR2(20)
+-- CITY                 VARCHAR2(20)
+-- SALARY               NUMBER(8)
+-- EMAIL                VARCHAR2(40)
+
+
+-- Step 7: Modify column size
+
+ALTER TABLE EMPLOYEE
+MODIFY EMP_NAME VARCHAR2(50);
+
+-- Output:
+-- Table altered.
+
+
+-- Step 8: View records based on conditions
+
+-- Employees working in MBA department
+
+SELECT *
+FROM EMPLOYEE
+WHERE DEPARTMENT = 'MBA';
+
+-- Output:
+-- EMP_ID  EMP_NAME    DEPARTMENT  CITY        SALARY
+-- ------  ----------  ----------  ----------  ------
+-- 102     M.HARIKA    MBA         CHENNAI     250000
+-- 103     HARSHITHA   MBA         BENGULURU   300000
+
+
+-- Employees with salary greater than 250000
+
+SELECT EMP_NAME, SALARY
+FROM EMPLOYEE
+WHERE SALARY > 250000;
+
+-- Output:
+-- EMP_NAME    SALARY
+-- ----------  ------
+-- HARSHITHA   300000
+
+
+-- Employees based in Chennai
+
+SELECT EMP_NAME, CITY
+FROM EMPLOYEE
+WHERE CITY = 'CHENNAI';
+
+-- Output:
+-- EMP_NAME   CITY
+-- ---------  -------
+-- M.HARIKA   CHENNAI
