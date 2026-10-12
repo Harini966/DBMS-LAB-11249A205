@@ -1,0 +1,276 @@
+
+SQL*Plus: Release 11.2.0.1.0 Production on Mon Oct 12 11:31:15 2026
+
+Copyright (c) 1982, 2010, Oracle.  All rights reserved.
+
+Enter user-name: A205@db2021
+Enter password:
+
+Connected to:
+Oracle Database 11g Release 11.2.0.1.0 - Production
+
+SQL> Create a table
+  2
+SQL> CREATE TABLE ORDERS (
+  2      ORDER_ID NUMBER(5) PRIMARY KEY,
+  3      ITEM_NAME VARCHAR2(30),
+  4      QUANTITY NUMBER(5),
+  5      PRICE NUMBER(10,2),
+  6      STATUS VARCHAR2(20)
+  7  );
+
+Table created.
+
+SQL>
+SQL> INSERT INTO ORDERS VALUES (101, 'Laptop', 1, 45000, 'Pending');
+
+1 row created.
+
+SQL> INSERT INTO ORDERS VALUES (102, 'Mouse', 2, 800, 'Cancelled');
+
+1 row created.
+
+SQL> INSERT INTO ORDERS VALUES (103, 'Keyboard', 1, 1500, 'Pending');
+
+1 row created.
+
+SQL> INSERT INTO ORDERS VALUES (104, 'Monitor', 1, 12000, 'Delivered');
+
+1 row created.
+
+SQL>
+SQL> SELECT * FROM ORDERS;
+
+  ORDER_ID ITEM_NAME                        QUANTITY      PRICE
+---------- ------------------------------ ---------- ----------
+STATUS
+--------------------
+       101 Laptop                                  1      45000
+Pending
+
+       102 Mouse                                   2        800
+Cancelled
+
+       103 Keyboard                                1       1500
+Pending
+
+
+  ORDER_ID ITEM_NAME                        QUANTITY      PRICE
+---------- ------------------------------ ---------- ----------
+STATUS
+--------------------
+       104 Monitor                                 1      12000
+Delivered
+
+
+SQL> UPDATE ORDERS
+  2  SET STATUS = 'Delivered'
+  3  WHERE ORDER_ID = 103;
+
+1 row updated.
+
+SQL>
+SQL> SELECT * FROM ORDERS
+  2  WHERE ORDER_ID = 103;
+
+  ORDER_ID ITEM_NAME                        QUANTITY      PRICE
+---------- ------------------------------ ---------- ----------
+STATUS
+--------------------
+       103 Keyboard                                1       1500
+Delivered
+
+
+SQL> DELETE FROM ORDERS
+  2  WHERE STATUS = 'Cancelled';
+
+1 row deleted.
+
+SQL>
+SQL> SELECT * FROM ORDERS
+  2  WHERE STATUS = 'Cancelled';
+
+no rows selected
+
+SQL> ALTER TABLE ORDERS
+  2  ADD DELIVERY_DATE DATE;
+
+Table altered.
+
+SQL> ALTER TABLE ORDERS
+  2  MODIFY ITEM_NAME VARCHAR2(60);
+
+Table altered.
+
+SQL> DESC ORDERS;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ ORDER_ID                                  NOT NULL NUMBER(5)
+ ITEM_NAME                                          VARCHAR2(60)
+ QUANTITY                                           NUMBER(5)
+ PRICE                                              NUMBER(10,2)
+ STATUS                                             VARCHAR2(20)
+ DELIVERY_DATE                                      DATE
+
+SQL> SELECT * FROM ORDERS
+  2  WHERE PRICE > 1000;
+
+  ORDER_ID ITEM_NAME
+---------- ------------------------------------------------------------
+  QUANTITY      PRICE STATUS               DELIVERY_
+---------- ---------- -------------------- ---------
+       101 Laptop
+         1      45000 Pending
+
+       103 Keyboard
+         1       1500 Delivered
+
+       104 Monitor
+         1      12000 Delivered
+
+
+SQL> SELECT * FROM ORDERS
+  2  WHERE STATUS = 'Pending';
+
+  ORDER_ID ITEM_NAME
+---------- ------------------------------------------------------------
+  QUANTITY      PRICE STATUS               DELIVERY_
+---------- ---------- -------------------- ---------
+       101 Laptop
+         1      45000 Pending
+
+
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> CREATE TABLE SALARY (
+  2      EMP_ID NUMBER(5) PRIMARY KEY,
+  3      EMP_NAME VARCHAR2(30),
+  4      BASIC NUMBER(10,2),
+  5      HRA NUMBER(10,2),
+  6      GROSS NUMBER(10,2)
+  7  );
+
+Table created.
+
+SQL>
+SQL> INSERT INTO SALARY VALUES (101, 'Ravi', 25000, 5000, 30000);
+
+1 row created.
+
+SQL> INSERT INTO SALARY VALUES (102, 'Priya', 30000, 6000, 36000);
+
+1 row created.
+
+SQL> INSERT INTO SALARY VALUES (103, 'Kumar', 20000, 4000, 24000);
+
+1 row created.
+
+SQL>
+SQL> SELECT * FROM SALARY;
+
+    EMP_ID EMP_NAME                            BASIC        HRA      GROSS
+---------- ------------------------------ ---------- ---------- ----------
+       101 Ravi                                25000       5000      30000
+       102 Priya                               30000       6000      36000
+       103 Kumar                               20000       4000      24000
+
+SQL> GRANT SELECT, UPDATE ON SALARY TO SCOTT;
+
+Grant succeeded.
+
+SQL> SELECT *
+  2  FROM USER_TAB_PRIVS
+  3  WHERE TABLE_NAME = 'SALARY'
+  4  AND GRANTEE = 'SCOTT';
+
+GRANTEE                        OWNER
+------------------------------ ------------------------------
+TABLE_NAME                     GRANTOR
+------------------------------ ------------------------------
+PRIVILEGE                                GRA HIE
+---------------------------------------- --- ---
+SCOTT                          A205
+SALARY                         A205
+SELECT                                   NO  NO
+
+SCOTT                          A205
+SALARY                         A205
+UPDATE                                   NO  NO
+
+GRANTEE                        OWNER
+------------------------------ ------------------------------
+TABLE_NAME                     GRANTOR
+------------------------------ ------------------------------
+PRIVILEGE                                GRA HIE
+---------------------------------------- --- ---
+
+
+SQL> INSERT INTO SALARY VALUES (104, 'Arun', 28000, 5000, 33000);
+
+1 row created.
+
+SQL> INSERT INTO SALARY VALUES (105, 'Divya', 32000, 7000, 39000);
+
+1 row created.
+
+SQL>
+SQL> COMMIT;
+
+Commit complete.
+
+SQL>
+SQL> SAVEPOINT SP1;
+
+Savepoint created.
+
+SQL> SELECT * FROM SALARY;
+
+    EMP_ID EMP_NAME                            BASIC        HRA      GROSS
+---------- ------------------------------ ---------- ---------- ----------
+       101 Ravi                                25000       5000      30000
+       102 Priya                               30000       6000      36000
+       103 Kumar                               20000       4000      24000
+       104 Arun                                28000       5000      33000
+       105 Divya                               32000       7000      39000
+
+SQL> INSERT INTO SALARY VALUES (106, 'Manoj', 22000, 3000, 25000);
+
+1 row created.
+
+SQL> INSERT INTO SALARY VALUES (107, 'Sneha', 35000, 8000, 43000);
+
+1 row created.
+
+SQL>
+SQL> ROLLBACK TO SP1;
+
+Rollback complete.
+
+SQL> SELECT * FROM SALARY;
+
+    EMP_ID EMP_NAME                            BASIC        HRA      GROSS
+---------- ------------------------------ ---------- ---------- ----------
+       101 Ravi                                25000       5000      30000
+       102 Priya                               30000       6000      36000
+       103 Kumar                               20000       4000      24000
+       104 Arun                                28000       5000      33000
+       105 Divya                               32000       7000      39000
+
+SQL> COMMIT;
+
+Commit complete.
+
+SQL>
+SQL> SELECT * FROM SALARY;
+
+    EMP_ID EMP_NAME                            BASIC        HRA      GROSS
+---------- ------------------------------ ---------- ---------- ----------
+       101 Ravi                                25000       5000      30000
+       102 Priya                               30000       6000      36000
+       103 Kumar                               20000       4000      24000
+       104 Arun                                28000       5000      33000
+       105 Divya                               32000       7000      39000
+
+SQL>
