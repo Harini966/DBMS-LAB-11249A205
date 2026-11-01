@@ -1,0 +1,297 @@
+-- =========================================================
+-- CURSOR PROGRAM - EMPLOYEE
+-- =========================================================
+
+SET SERVEROUTPUT ON;
+
+-- =========================================================
+-- STEP 1: CREATE EMPLOYEE TABLE
+-- =========================================================
+
+CREATE TABLE EMPLOYEE
+(
+    EMP_ID NUMBER(5) PRIMARY KEY,
+    EMP_NAME VARCHAR2(30),
+    DEPARTMENT VARCHAR2(20),
+    SALARY NUMBER(8)
+);
+
+
+-- =========================================================
+-- STEP 2: INSERT SAMPLE RECORDS
+-- =========================================================
+
+INSERT INTO EMPLOYEE VALUES (101, 'ARUN',  'CSE', 35000);
+INSERT INTO EMPLOYEE VALUES (102, 'BALA',  'ECE', 32000);
+INSERT INTO EMPLOYEE VALUES (103, 'DIVYA', 'IT',  45000);
+INSERT INTO EMPLOYEE VALUES (104, 'KAVI',  'CSE', 40000);
+
+COMMIT;
+
+
+-- =========================================================
+-- PART A: IMPLICIT CURSOR
+-- =========================================================
+
+BEGIN
+
+    UPDATE EMPLOYEE
+    SET SALARY = SALARY + 5000
+    WHERE DEPARTMENT = 'CSE';
+
+    DBMS_OUTPUT.PUT_LINE(
+        SQL%ROWCOUNT || ' row(s) updated.'
+    );
+
+    COMMIT;
+
+END;
+/
+
+-- =========================================================
+-- VERIFY IMPLICIT CURSOR UPDATE
+-- =========================================================
+
+SELECT * FROM EMPLOYEE;
+
+
+-- =========================================================
+-- PART B: EXPLICIT CURSOR
+-- =========================================================
+
+DECLARE
+
+    CURSOR EMP_CURSOR IS
+        SELECT EMP_ID, EMP_NAME, DEPARTMENT, SALARY
+        FROM EMPLOYEE;
+
+    V_ID   EMPLOYEE.EMP_ID%TYPE;
+    V_NAME EMPLOYEE.EMP_NAME%TYPE;
+    V_DEPT EMPLOYEE.DEPARTMENT%TYPE;
+    V_SAL  EMPLOYEE.SALARY%TYPE;
+
+BEGIN
+
+    OPEN EMP_CURSOR;
+
+    LOOP
+
+        FETCH EMP_CURSOR
+        INTO V_ID, V_NAME, V_DEPT, V_SAL;
+
+        EXIT WHEN EMP_CURSOR%NOTFOUND;
+
+        DBMS_OUTPUT.PUT_LINE(
+            V_ID || ' ' ||
+            V_NAME || ' ' ||
+            V_DEPT || ' ' ||
+            V_SAL
+        );
+
+    END LOOP;
+
+    CLOSE EMP_CURSOR;
+
+END;
+/
+
+
+-- =========================================================
+-- PART C: CURSOR FOR LOOP
+-- =========================================================
+
+DECLARE
+
+    CURSOR EMP_CURSOR IS
+        SELECT EMP_ID, EMP_NAME, SALARY
+        FROM EMPLOYEE;
+
+BEGIN
+
+    FOR EMP_REC IN EMP_CURSOR
+    LOOP
+
+        DBMS_OUTPUT.PUT_LINE(
+            EMP_REC.EMP_ID || ' ' ||
+            EMP_REC.EMP_NAME || ' ' ||
+            EMP_REC.SALARY
+        );
+
+    END LOOP;
+
+END;
+/
+
+
+-- =========================================================
+-- CREATE RESULT TABLE FOR IMPLICIT CURSOR
+-- =========================================================
+
+CREATE TABLE IMPLICIT_CURSOR_RESULT
+(
+    EMP_ID NUMBER(5),
+    EMP_NAME VARCHAR2(30),
+    DEPARTMENT VARCHAR2(20),
+    SALARY NUMBER(8)
+);
+
+INSERT INTO IMPLICIT_CURSOR_RESULT
+SELECT EMP_ID, EMP_NAME, DEPARTMENT, SALARY
+FROM EMPLOYEE;
+
+COMMIT;
+
+
+-- =========================================================
+-- CREATE RESULT TABLE FOR EXPLICIT CURSOR
+-- =========================================================
+
+CREATE TABLE EXPLICIT_CURSOR_RESULT
+(
+    EMP_ID NUMBER(5),
+    EMP_NAME VARCHAR2(30),
+    DEPARTMENT VARCHAR2(20),
+    SALARY NUMBER(8)
+);
+
+INSERT INTO EXPLICIT_CURSOR_RESULT
+SELECT EMP_ID, EMP_NAME, DEPARTMENT, SALARY
+FROM EMPLOYEE;
+
+COMMIT;
+
+
+-- =========================================================
+-- CREATE RESULT TABLE FOR CURSOR FOR LOOP
+-- =========================================================
+
+CREATE TABLE CURSOR_FOR_RESULT
+(
+    EMP_ID NUMBER(5),
+    EMP_NAME VARCHAR2(30),
+    SALARY NUMBER(8)
+);
+
+INSERT INTO CURSOR_FOR_RESULT
+SELECT EMP_ID, EMP_NAME, SALARY
+FROM EMPLOYEE;
+
+COMMIT;
+
+
+-- =========================================================
+-- DISPLAY RESULT TABLES
+-- =========================================================
+
+SELECT * FROM IMPLICIT_CURSOR_RESULT;
+
+SELECT * FROM EXPLICIT_CURSOR_RESULT;
+
+SELECT * FROM CURSOR_FOR_RESULT;
+
+
+-- =========================================================
+-- EXPECTED OUTPUT
+-- =========================================================
+
+/*
+
+PART A - IMPLICIT CURSOR
+
+2 row(s) updated.
+
+
+EMPLOYEE TABLE
+
+EMP_ID   EMP_NAME   DEPARTMENT   SALARY
+------   --------   ----------   ------
+101      ARUN       CSE          40000
+102      BALA       ECE          32000
+103      DIVYA      IT           45000
+104      KAVI       CSE          45000
+
+
+PART B - EXPLICIT CURSOR
+
+101 ARUN CSE 40000
+102 BALA ECE 32000
+103 DIVYA IT 45000
+104 KAVI CSE 45000
+
+
+PART C - CURSOR FOR LOOP
+
+101 ARUN 40000
+102 BALA 32000
+103 DIVYA 45000
+104 KAVI 45000
+
+
+IMPLICIT_CURSOR_RESULT
+
+EMP_ID   EMP_NAME   DEPARTMENT   SALARY
+------   --------   ----------   ------
+101      ARUN       CSE          40000
+102      BALA       ECE          32000
+103      DIVYA      IT           45000
+104      KAVI       CSE          45000
+
+
+EXPLICIT_CURSOR_RESULT
+
+EMP_ID   EMP_NAME   DEPARTMENT   SALARY
+------   --------   ----------   ------
+101      ARUN       CSE          40000
+102      BALA       ECE          32000
+103      DIVYA      IT           45000
+104      KAVI       CSE          45000
+
+
+CURSOR_FOR_RESULT
+
+EMP_ID   EMP_NAME   SALARY
+------   --------   ------
+101      ARUN       40000
+102      BALA       32000
+103      DIVYA      45000
+104      KAVI       45000
+
+*/
+
+
+-- =========================================================
+-- CURSOR ATTRIBUTES
+-- =========================================================
+
+/*
+
+IMPLICIT CURSOR ATTRIBUTES
+
+SQL%FOUND
+    TRUE if rows were affected.
+
+SQL%NOTFOUND
+    TRUE if no rows were affected.
+
+SQL%ROWCOUNT
+    Returns the number of rows affected.
+
+SQL%ISOPEN
+    Always FALSE for implicit cursors.
+
+
+EXPLICIT CURSOR ATTRIBUTES
+
+EMP_CURSOR%FOUND
+    TRUE if the last FETCH returned a row.
+
+EMP_CURSOR%NOTFOUND
+    TRUE if the last FETCH did not return a row.
+
+EMP_CURSOR%ROWCOUNT
+    Number of rows fetched so far.
+
+EMP_CURSOR%ISOPEN
+    TRUE if the cursor is currently open.
+
+*/
