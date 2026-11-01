@@ -1,0 +1,197 @@
+-- =========================================================
+-- CREATION OF VIEWS, SEQUENCE, INDEX AND SAVEPOINT
+-- =========================================================
+
+-- STEP 1: CREATE STUDENT TABLE
+
+CREATE TABLE STUDENT
+(
+    STUDENT_ID NUMBER(5) PRIMARY KEY,
+    STUDENT_NAME VARCHAR2(30),
+    DEPARTMENT VARCHAR2(20),
+    MARKS NUMBER(3)
+);
+
+-- OUTPUT:
+-- Table created.
+
+
+-- STEP 2: INSERT RECORDS
+
+INSERT INTO STUDENT VALUES (101, 'ARUN',  'CSE', 85);
+INSERT INTO STUDENT VALUES (102, 'BALA',  'ECE', 78);
+INSERT INTO STUDENT VALUES (103, 'DIVYA', 'IT',  92);
+INSERT INTO STUDENT VALUES (104, 'KAVI',  'CSE', 88);
+
+-- OUTPUT:
+-- 1 row created.
+-- 1 row created.
+-- 1 row created.
+-- 1 row created.
+
+
+-- STEP 3: CREATE A VIEW FOR CSE STUDENTS
+
+CREATE VIEW CSE_STUDENTS AS
+SELECT STUDENT_ID, STUDENT_NAME, MARKS
+FROM STUDENT
+WHERE DEPARTMENT = 'CSE';
+
+-- OUTPUT:
+-- View created.
+
+
+-- STEP 4: RETRIEVE DATA FROM VIEW
+
+SELECT * FROM CSE_STUDENTS;
+
+-- OUTPUT:
+-- STUDENT_ID  STUDENT_NAME  MARKS
+-- ----------  ------------  -----
+-- 101         ARUN          85
+-- 104         KAVI          88
+
+
+-- STEP 5: CREATE A SEQUENCE
+
+CREATE SEQUENCE STUD_SEQ
+START WITH 105
+INCREMENT BY 1
+MINVALUE 105
+MAXVALUE 999
+NOCYCLE
+NOCACHE;
+
+-- OUTPUT:
+-- Sequence created.
+
+
+-- STEP 6: GENERATE SEQUENCE VALUES
+
+SELECT STUD_SEQ.NEXTVAL FROM DUAL;
+
+-- OUTPUT:
+-- NEXTVAL
+-- -------
+-- 105
+
+
+SELECT STUD_SEQ.NEXTVAL FROM DUAL;
+
+-- OUTPUT:
+-- NEXTVAL
+-- -------
+-- 106
+
+
+-- STEP 7: INSERT USING SEQUENCE
+
+INSERT INTO STUDENT
+VALUES (STUD_SEQ.NEXTVAL, 'RAVI', 'ECE', 81);
+
+-- OUTPUT:
+-- 1 row created.
+
+-- NOTE:
+-- Since 105 and 106 were already generated,
+-- RAVI gets STUDENT_ID = 107.
+
+
+-- VERIFY STUDENT TABLE
+
+SELECT * FROM STUDENT;
+
+-- OUTPUT:
+-- STUDENT_ID  STUDENT_NAME  DEPARTMENT  MARKS
+-- ----------  ------------  ----------  -----
+-- 101         ARUN          CSE         85
+-- 102         BALA          ECE         78
+-- 103         DIVYA         IT          92
+-- 104         KAVI          CSE         88
+-- 107         RAVI          ECE         81
+
+
+-- STEP 8: CREATE AN INDEX
+
+CREATE INDEX IDX_STUDENT_NAME
+ON STUDENT(STUDENT_NAME);
+
+-- OUTPUT:
+-- Index created.
+
+
+-- VERIFY INDEX
+
+SELECT INDEX_NAME, TABLE_NAME
+FROM USER_INDEXES
+WHERE TABLE_NAME = 'STUDENT';
+
+-- OUTPUT:
+-- INDEX_NAME          TABLE_NAME
+-- ------------------  ----------
+-- IDX_STUDENT_NAME    STUDENT
+-- SYS_C00XXXXX        STUDENT
+--
+-- SYS_C00XXXXX is the automatically generated
+-- index for the primary key.
+-- The exact SYS_C00XXXXX name may differ.
+
+
+-- STEP 9: INSERT RECORD BEFORE SAVEPOINT
+
+INSERT INTO STUDENT
+VALUES (108, 'SURESH', 'IT', 90);
+
+-- OUTPUT:
+-- 1 row created.
+
+
+-- CREATE SAVEPOINT
+
+SAVEPOINT SP1;
+
+-- OUTPUT:
+-- Savepoint created.
+
+
+-- STEP 10: INSERT ANOTHER RECORD
+
+INSERT INTO STUDENT
+VALUES (109, 'MANOJ', 'CSE', 87);
+
+-- OUTPUT:
+-- 1 row created.
+
+
+-- STEP 11: ROLLBACK TO SAVEPOINT
+
+ROLLBACK TO SP1;
+
+-- OUTPUT:
+-- Rollback complete.
+
+
+-- STEP 12: VERIFY RECORDS
+
+SELECT * FROM STUDENT;
+
+-- OUTPUT:
+-- STUDENT_ID  STUDENT_NAME  DEPARTMENT  MARKS
+-- ----------  ------------  ----------  -----
+-- 101         ARUN          CSE         85
+-- 102         BALA          ECE         78
+-- 103         DIVYA         IT          92
+-- 104         KAVI          CSE         88
+-- 107         RAVI          ECE         81
+-- 108         SURESH        IT          90
+
+-- RECORD 109 (MANOJ) IS REMOVED BECAUSE OF
+-- ROLLBACK TO SAVEPOINT SP1.
+
+
+-- STEP 13: COMMIT THE TRANSACTION
+
+COMMIT;
+
+-- OUTPUT:
+-- Commit complete.
