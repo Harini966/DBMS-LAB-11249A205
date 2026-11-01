@@ -1,0 +1,279 @@
+-- =========================================================
+-- PROGRAM 1: HANDLING ZERO_DIVIDE EXCEPTION
+-- =========================================================
+
+SET SERVEROUTPUT ON;
+
+CREATE TABLE RESULT_ZERO_DIVIDE
+(
+    ERROR_MESSAGE VARCHAR2(100)
+);
+
+DECLARE
+    A NUMBER := 100;
+    B NUMBER := 0;
+    C NUMBER;
+BEGIN
+    C := A / B;
+
+    INSERT INTO RESULT_ZERO_DIVIDE
+    VALUES ('Result = ' || C);
+
+EXCEPTION
+    WHEN ZERO_DIVIDE THEN
+        INSERT INTO RESULT_ZERO_DIVIDE
+        VALUES ('Error: Division by Zero is not allowed.');
+END;
+/
+
+SELECT * FROM RESULT_ZERO_DIVIDE;
+
+-- OUTPUT TABLE:
+-- ERROR_MESSAGE
+-- ----------------------------------------
+-- Error: Division by Zero is not allowed.
+
+
+
+-- =========================================================
+-- PROGRAM 2: HANDLING NO_DATA_FOUND EXCEPTION
+-- =========================================================
+
+CREATE TABLE STUDENT
+(
+    STUDENT_ID NUMBER PRIMARY KEY,
+    STUDENT_NAME VARCHAR2(30)
+);
+
+INSERT INTO STUDENT VALUES (101, 'ARUN');
+
+COMMIT;
+
+CREATE TABLE RESULT_NO_DATA
+(
+    ERROR_MESSAGE VARCHAR2(100)
+);
+
+DECLARE
+    V_NAME STUDENT.STUDENT_NAME%TYPE;
+BEGIN
+    SELECT STUDENT_NAME
+    INTO V_NAME
+    FROM STUDENT
+    WHERE STUDENT_ID = 999;
+
+    INSERT INTO RESULT_NO_DATA
+    VALUES (V_NAME);
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        INSERT INTO RESULT_NO_DATA
+        VALUES ('Error: No matching record found.');
+END;
+/
+
+SELECT * FROM RESULT_NO_DATA;
+
+-- OUTPUT TABLE:
+-- ERROR_MESSAGE
+-- ----------------------------------------
+-- Error: No matching record found.
+
+
+
+-- =========================================================
+-- PROGRAM 3: HANDLING TOO_MANY_ROWS EXCEPTION
+-- =========================================================
+
+-- Insert another record so that SELECT INTO
+-- returns more than one row.
+
+INSERT INTO STUDENT VALUES (102, 'BALA');
+
+COMMIT;
+
+CREATE TABLE RESULT_TOO_MANY
+(
+    ERROR_MESSAGE VARCHAR2(100)
+);
+
+DECLARE
+    V_NAME STUDENT.STUDENT_NAME%TYPE;
+BEGIN
+    SELECT STUDENT_NAME
+    INTO V_NAME
+    FROM STUDENT;
+
+    INSERT INTO RESULT_TOO_MANY
+    VALUES (V_NAME);
+
+EXCEPTION
+    WHEN TOO_MANY_ROWS THEN
+        INSERT INTO RESULT_TOO_MANY
+        VALUES ('Error: Query returned multiple rows.');
+END;
+/
+
+SELECT * FROM RESULT_TOO_MANY;
+
+-- OUTPUT TABLE:
+-- ERROR_MESSAGE
+-- ----------------------------------------
+-- Error: Query returned multiple rows.
+
+
+
+-- =========================================================
+-- PROGRAM 4: HANDLING DUP_VAL_ON_INDEX EXCEPTION
+-- =========================================================
+
+CREATE TABLE RESULT_DUPLICATE
+(
+    ERROR_MESSAGE VARCHAR2(100)
+);
+
+BEGIN
+    INSERT INTO STUDENT VALUES (101, 'BALA');
+
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+        INSERT INTO RESULT_DUPLICATE
+        VALUES ('Error: Duplicate value violates unique constraint.');
+END;
+/
+
+SELECT * FROM RESULT_DUPLICATE;
+
+-- OUTPUT TABLE:
+-- ERROR_MESSAGE
+-- -----------------------------------------------
+-- Error: Duplicate value violates unique constraint.
+
+
+
+-- =========================================================
+-- PROGRAM 5: HANDLING VALUE_ERROR EXCEPTION
+-- =========================================================
+
+CREATE TABLE RESULT_VALUE_ERROR
+(
+    ERROR_MESSAGE VARCHAR2(100)
+);
+
+DECLARE
+    V_NUM NUMBER(2);
+BEGIN
+    V_NUM := 12345;
+
+    INSERT INTO RESULT_VALUE_ERROR
+    VALUES ('Value assigned successfully.');
+
+EXCEPTION
+    WHEN VALUE_ERROR THEN
+        INSERT INTO RESULT_VALUE_ERROR
+        VALUES ('Error: Value exceeds variable size.');
+END;
+/
+
+SELECT * FROM RESULT_VALUE_ERROR;
+
+-- OUTPUT TABLE:
+-- ERROR_MESSAGE
+-- ----------------------------------------
+-- Error: Value exceeds variable size.
+
+
+
+-- =========================================================
+-- PROGRAM 6: USING OTHERS HANDLER
+-- =========================================================
+
+CREATE TABLE RESULT_OTHERS
+(
+    ERROR_CODE NUMBER,
+    ERROR_MESSAGE VARCHAR2(200)
+);
+
+DECLARE
+    V_NUM NUMBER;
+BEGIN
+    V_NUM := 10 / 0;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        INSERT INTO RESULT_OTHERS
+        VALUES (SQLCODE, SQLERRM);
+END;
+/
+
+SELECT * FROM RESULT_OTHERS;
+
+-- OUTPUT TABLE:
+-- ERROR_CODE   ERROR_MESSAGE
+-- ----------   --------------------------------------
+-- -1476        ORA-01476: divisor is equal to zero
+
+
+
+-- =========================================================
+-- FINAL OUTPUT SUMMARY
+-- =========================================================
+
+CREATE TABLE EXCEPTION_SUMMARY
+(
+    PROGRAM_NO NUMBER,
+    EXCEPTION_NAME VARCHAR2(30),
+    OUTPUT_MESSAGE VARCHAR2(100)
+);
+
+INSERT INTO EXCEPTION_SUMMARY VALUES
+(1, 'ZERO_DIVIDE',
+ 'Error: Division by Zero is not allowed.');
+
+INSERT INTO EXCEPTION_SUMMARY VALUES
+(2, 'NO_DATA_FOUND',
+ 'Error: No matching record found.');
+
+INSERT INTO EXCEPTION_SUMMARY VALUES
+(3, 'TOO_MANY_ROWS',
+ 'Error: Query returned multiple rows.');
+
+INSERT INTO EXCEPTION_SUMMARY VALUES
+(4, 'DUP_VAL_ON_INDEX',
+ 'Error: Duplicate value violates unique constraint.');
+
+INSERT INTO EXCEPTION_SUMMARY VALUES
+(5, 'VALUE_ERROR',
+ 'Error: Value exceeds variable size.');
+
+INSERT INTO EXCEPTION_SUMMARY VALUES
+(6, 'OTHERS',
+ 'ORA-01476: divisor is equal to zero');
+
+COMMIT;
+
+SELECT * FROM EXCEPTION_SUMMARY
+ORDER BY PROGRAM_NO;
+
+-- =========================================================
+-- FINAL OUTPUT TABLE
+-- =========================================================
+--
+-- PROGRAM_NO  EXCEPTION_NAME       OUTPUT_MESSAGE
+-- ----------  -------------------  -------------------------------
+-- 1           ZERO_DIVIDE          Error: Division by Zero is
+--                                  not allowed.
+--
+-- 2           NO_DATA_FOUND        Error: No matching record found.
+--
+-- 3           TOO_MANY_ROWS        Error: Query returned
+--                                  multiple rows.
+--
+-- 4           DUP_VAL_ON_INDEX     Error: Duplicate value
+--                                  violates unique constraint.
+--
+-- 5           VALUE_ERROR          Error: Value exceeds
+--                                  variable size.
+--
+-- 6           OTHERS               ORA-01476: divisor is equal
+--                                  to zero
