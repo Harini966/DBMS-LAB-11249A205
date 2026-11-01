@@ -1,0 +1,360 @@
+-- =========================================================
+-- NORMALIZATION: UNF, 1NF, 2NF, 3NF, 4NF AND 5NF
+-- =========================================================
+
+
+-- =========================================================
+-- UNNORMALIZED FORM (UNF)
+-- =========================================================
+
+-- Original data:
+-- Student_ID | Student_Name | Course1 | Course2 | Course3
+-- 101        | ARUN         | DBMS    | JAVA    | C
+-- 102        | BALA         | DBMS    | C++     | NULL
+-- 103        | DIVYA        | JAVA    | PYTHON  | DBMS
+
+
+-- =========================================================
+-- FIRST NORMAL FORM (1NF)
+-- =========================================================
+
+CREATE TABLE STUDENT_COURSE_1NF
+(
+    STUDENT_ID NUMBER(5),
+    STUDENT_NAME VARCHAR2(30),
+    COURSE VARCHAR2(20),
+    PRIMARY KEY (STUDENT_ID, COURSE)
+);
+
+-- OUTPUT:
+-- Table created.
+
+
+INSERT INTO STUDENT_COURSE_1NF VALUES (101, 'ARUN',  'DBMS');
+INSERT INTO STUDENT_COURSE_1NF VALUES (101, 'ARUN',  'JAVA');
+INSERT INTO STUDENT_COURSE_1NF VALUES (101, 'ARUN',  'C');
+INSERT INTO STUDENT_COURSE_1NF VALUES (102, 'BALA',  'DBMS');
+INSERT INTO STUDENT_COURSE_1NF VALUES (102, 'BALA',  'C++');
+INSERT INTO STUDENT_COURSE_1NF VALUES (103, 'DIVYA', 'JAVA');
+INSERT INTO STUDENT_COURSE_1NF VALUES (103, 'DIVYA', 'PYTHON');
+INSERT INTO STUDENT_COURSE_1NF VALUES (103, 'DIVYA', 'DBMS');
+
+-- OUTPUT:
+-- 1 row created.  (for each INSERT)
+
+
+SELECT * FROM STUDENT_COURSE_1NF
+ORDER BY STUDENT_ID, COURSE;
+
+-- OUTPUT:
+-- STUDENT_ID  STUDENT_NAME  COURSE
+-- ----------  ------------  ------
+-- 101         ARUN          C
+-- 101         ARUN          DBMS
+-- 101         ARUN          JAVA
+-- 102         BALA          C++
+-- 102         BALA          DBMS
+-- 103         DIVYA         DBMS
+-- 103         DIVYA         JAVA
+-- 103         DIVYA         PYTHON
+
+
+-- =========================================================
+-- SECOND NORMAL FORM (2NF)
+-- =========================================================
+
+-- STUDENT TABLE
+
+CREATE TABLE STUDENT
+(
+    STUDENT_ID NUMBER(5) PRIMARY KEY,
+    STUDENT_NAME VARCHAR2(30)
+);
+
+-- OUTPUT:
+-- Table created.
+
+
+INSERT INTO STUDENT VALUES (101, 'ARUN');
+INSERT INTO STUDENT VALUES (102, 'BALA');
+INSERT INTO STUDENT VALUES (103, 'DIVYA');
+
+-- OUTPUT:
+-- 1 row created.  (for each INSERT)
+
+
+-- STUDENT_COURSE TABLE
+
+CREATE TABLE STUDENT_COURSE
+(
+    STUDENT_ID NUMBER(5),
+    COURSE VARCHAR2(20),
+    PRIMARY KEY (STUDENT_ID, COURSE),
+    FOREIGN KEY (STUDENT_ID)
+        REFERENCES STUDENT(STUDENT_ID)
+);
+
+-- OUTPUT:
+-- Table created.
+
+
+INSERT INTO STUDENT_COURSE VALUES (101, 'DBMS');
+INSERT INTO STUDENT_COURSE VALUES (101, 'JAVA');
+INSERT INTO STUDENT_COURSE VALUES (101, 'C');
+INSERT INTO STUDENT_COURSE VALUES (102, 'DBMS');
+INSERT INTO STUDENT_COURSE VALUES (102, 'C++');
+INSERT INTO STUDENT_COURSE VALUES (103, 'JAVA');
+INSERT INTO STUDENT_COURSE VALUES (103, 'PYTHON');
+INSERT INTO STUDENT_COURSE VALUES (103, 'DBMS');
+
+-- OUTPUT:
+-- 1 row created.  (for each INSERT)
+
+
+SELECT * FROM STUDENT;
+
+-- OUTPUT:
+-- STUDENT_ID  STUDENT_NAME
+-- ----------  ------------
+-- 101         ARUN
+-- 102         BALA
+-- 103         DIVYA
+
+
+SELECT * FROM STUDENT_COURSE
+ORDER BY STUDENT_ID, COURSE;
+
+-- OUTPUT:
+-- STUDENT_ID  COURSE
+-- ----------  ------
+-- 101         C
+-- 101         DBMS
+-- 101         JAVA
+-- 102         C++
+-- 102         DBMS
+-- 103         DBMS
+-- 103         JAVA
+-- 103         PYTHON
+
+
+-- =========================================================
+-- THIRD NORMAL FORM (3NF)
+-- =========================================================
+
+-- DEPARTMENT TABLE
+
+CREATE TABLE DEPARTMENT
+(
+    DEPT_ID VARCHAR2(5) PRIMARY KEY,
+    DEPT_NAME VARCHAR2(30)
+);
+
+-- OUTPUT:
+-- Table created.
+
+
+INSERT INTO DEPARTMENT VALUES ('D01', 'CSE');
+INSERT INTO DEPARTMENT VALUES ('D02', 'ECE');
+
+-- OUTPUT:
+-- 1 row created.
+-- 1 row created.
+
+
+-- STUDENT TABLE FOR 3NF
+
+CREATE TABLE STUDENT_3NF
+(
+    STUDENT_ID NUMBER(5) PRIMARY KEY,
+    STUDENT_NAME VARCHAR2(30),
+    DEPT_ID VARCHAR2(5),
+    FOREIGN KEY (DEPT_ID)
+        REFERENCES DEPARTMENT(DEPT_ID)
+);
+
+-- OUTPUT:
+-- Table created.
+
+
+INSERT INTO STUDENT_3NF VALUES (101, 'ARUN', 'D01');
+INSERT INTO STUDENT_3NF VALUES (102, 'BALA', 'D02');
+INSERT INTO STUDENT_3NF VALUES (103, 'DIVYA', 'D01');
+
+-- OUTPUT:
+-- 1 row created.  (for each INSERT)
+
+
+SELECT * FROM DEPARTMENT;
+
+-- OUTPUT:
+-- DEPT_ID  DEPT_NAME
+-- -------  ---------
+-- D01      CSE
+-- D02      ECE
+
+
+SELECT * FROM STUDENT_3NF;
+
+-- OUTPUT:
+-- STUDENT_ID  STUDENT_NAME  DEPT_ID
+-- ----------  ------------  -------
+-- 101         ARUN          D01
+-- 102         BALA          D02
+-- 103         DIVYA         D01
+
+
+-- =========================================================
+-- FOURTH NORMAL FORM (4NF)
+-- =========================================================
+
+CREATE TABLE STUDENT_HOBBY
+(
+    STUDENT_NAME VARCHAR2(30),
+    HOBBY VARCHAR2(30),
+    PRIMARY KEY (STUDENT_NAME, HOBBY)
+);
+
+-- OUTPUT:
+-- Table created.
+
+
+CREATE TABLE STUDENT_LANGUAGE
+(
+    STUDENT_NAME VARCHAR2(30),
+    LANGUAGE VARCHAR2(30),
+    PRIMARY KEY (STUDENT_NAME, LANGUAGE)
+);
+
+-- OUTPUT:
+-- Table created.
+
+
+INSERT INTO STUDENT_HOBBY VALUES ('ARUN', 'Cricket');
+INSERT INTO STUDENT_HOBBY VALUES ('ARUN', 'Music');
+INSERT INTO STUDENT_HOBBY VALUES ('BALA', 'Reading');
+
+-- OUTPUT:
+-- 1 row created.  (for each INSERT)
+
+
+INSERT INTO STUDENT_LANGUAGE VALUES ('ARUN', 'Tamil');
+INSERT INTO STUDENT_LANGUAGE VALUES ('ARUN', 'English');
+INSERT INTO STUDENT_LANGUAGE VALUES ('BALA', 'Tamil');
+
+-- OUTPUT:
+-- 1 row created.  (for each INSERT)
+
+
+SELECT * FROM STUDENT_HOBBY;
+
+-- OUTPUT:
+-- STUDENT_NAME  HOBBY
+-- ------------  -------
+-- ARUN          Cricket
+-- ARUN          Music
+-- BALA          Reading
+
+
+SELECT * FROM STUDENT_LANGUAGE;
+
+-- OUTPUT:
+-- STUDENT_NAME  LANGUAGE
+-- ------------  --------
+-- ARUN          Tamil
+-- ARUN          English
+-- BALA          Tamil
+
+
+-- =========================================================
+-- FIFTH NORMAL FORM (5NF)
+-- =========================================================
+
+CREATE TABLE SUPPLIER_PART
+(
+    SUPPLIER_ID VARCHAR2(5),
+    PART_ID VARCHAR2(5),
+    PRIMARY KEY (SUPPLIER_ID, PART_ID)
+);
+
+-- OUTPUT:
+-- Table created.
+
+
+CREATE TABLE PART_PROJECT
+(
+    PART_ID VARCHAR2(5),
+    PROJECT_ID VARCHAR2(5),
+    PRIMARY KEY (PART_ID, PROJECT_ID)
+);
+
+-- OUTPUT:
+-- Table created.
+
+
+CREATE TABLE SUPPLIER_PROJECT
+(
+    SUPPLIER_ID VARCHAR2(5),
+    PROJECT_ID VARCHAR2(5),
+    PRIMARY KEY (SUPPLIER_ID, PROJECT_ID)
+);
+
+-- OUTPUT:
+-- Table created.
+
+
+INSERT INTO SUPPLIER_PART VALUES ('S1', 'P1');
+INSERT INTO SUPPLIER_PART VALUES ('S1', 'P2');
+INSERT INTO SUPPLIER_PART VALUES ('S2', 'P1');
+
+-- OUTPUT:
+-- 1 row created.  (for each INSERT)
+
+
+INSERT INTO PART_PROJECT VALUES ('P1', 'J1');
+INSERT INTO PART_PROJECT VALUES ('P2', 'J1');
+INSERT INTO PART_PROJECT VALUES ('P1', 'J2');
+
+-- OUTPUT:
+-- 1 row created.  (for each INSERT)
+
+
+INSERT INTO SUPPLIER_PROJECT VALUES ('S1', 'J1');
+INSERT INTO SUPPLIER_PROJECT VALUES ('S2', 'J2');
+
+-- OUTPUT:
+-- 1 row created.  (for each INSERT)
+
+
+SELECT * FROM SUPPLIER_PART;
+
+-- OUTPUT:
+-- SUPPLIER_ID  PART_ID
+-- -----------  -------
+-- S1           P1
+-- S1           P2
+-- S2           P1
+
+
+SELECT * FROM PART_PROJECT;
+
+-- OUTPUT:
+-- PART_ID  PROJECT_ID
+-- -------  ----------
+-- P1       J1
+-- P2       J1
+-- P1       J2
+
+
+SELECT * FROM SUPPLIER_PROJECT;
+
+-- OUTPUT:
+-- SUPPLIER_ID  PROJECT_ID
+-- -----------  ----------
+-- S1           J1
+-- S2           J2
+
+
+COMMIT;
+
+-- OUTPUT:
+-- Commit complete.
