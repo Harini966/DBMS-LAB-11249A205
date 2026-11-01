@@ -1,0 +1,203 @@
+-- =========================================================
+-- TRIGGER PROGRAM: EMPLOYEE AUDIT
+-- =========================================================
+
+SET SERVEROUTPUT ON;
+
+-- STEP 1: CREATE EMPLOYEE TABLE
+CREATE TABLE EMPLOYEE
+(
+    EMP_ID NUMBER(5) PRIMARY KEY,
+    EMP_NAME VARCHAR2(30),
+    SALARY NUMBER(8)
+);
+
+-- STEP 2: CREATE EMP_AUDIT TABLE
+CREATE TABLE EMP_AUDIT
+(
+    AUDIT_ID NUMBER(5),
+    EMP_ID NUMBER(5),
+    ACTION_PERFORMED VARCHAR2(20),
+    ACTION_DATE DATE
+);
+
+-- STEP 3: CREATE SEQUENCE FOR AUDIT ID
+CREATE SEQUENCE EMP_AUDIT_SEQ
+START WITH 1
+INCREMENT BY 1;
+
+-- STEP 4: INSERT SAMPLE RECORDS
+INSERT INTO EMPLOYEE VALUES (101, 'ARUN', 35000);
+INSERT INTO EMPLOYEE VALUES (102, 'BALA', 40000);
+
+COMMIT;
+
+
+-- =========================================================
+-- STEP 5: INSERT TRIGGER
+-- =========================================================
+
+CREATE OR REPLACE TRIGGER TRG_EMP_INSERT
+AFTER INSERT
+ON EMPLOYEE
+FOR EACH ROW
+BEGIN
+    INSERT INTO EMP_AUDIT
+    VALUES
+    (
+        EMP_AUDIT_SEQ.NEXTVAL,
+        :NEW.EMP_ID,
+        'INSERT',
+        SYSDATE
+    );
+END;
+/
+
+-- Test INSERT Trigger
+INSERT INTO EMPLOYEE VALUES (103, 'DIVYA', 45000);
+
+COMMIT;
+
+
+-- =========================================================
+-- STEP 6: UPDATE TRIGGER
+-- =========================================================
+
+CREATE OR REPLACE TRIGGER TRG_EMP_UPDATE
+AFTER UPDATE
+ON EMPLOYEE
+FOR EACH ROW
+BEGIN
+    INSERT INTO EMP_AUDIT
+    VALUES
+    (
+        EMP_AUDIT_SEQ.NEXTVAL,
+        :NEW.EMP_ID,
+        'UPDATE',
+        SYSDATE
+    );
+END;
+/
+
+-- Test UPDATE Trigger
+UPDATE EMPLOYEE
+SET SALARY = 50000
+WHERE EMP_ID = 101;
+
+COMMIT;
+
+
+-- =========================================================
+-- STEP 7: DELETE TRIGGER
+-- =========================================================
+
+CREATE OR REPLACE TRIGGER TRG_EMP_DELETE
+AFTER DELETE
+ON EMPLOYEE
+FOR EACH ROW
+BEGIN
+    INSERT INTO EMP_AUDIT
+    VALUES
+    (
+        EMP_AUDIT_SEQ.NEXTVAL,
+        :OLD.EMP_ID,
+        'DELETE',
+        SYSDATE
+    );
+END;
+/
+
+-- Test DELETE Trigger
+DELETE FROM EMPLOYEE
+WHERE EMP_ID = 102;
+
+COMMIT;
+
+
+-- =========================================================
+-- FINAL EMPLOYEE TABLE
+-- =========================================================
+
+SELECT * FROM EMPLOYEE;
+
+
+-- =========================================================
+-- FINAL AUDIT TABLE
+-- =========================================================
+
+SELECT
+    AUDIT_ID,
+    EMP_ID,
+    ACTION_PERFORMED,
+    ACTION_DATE
+FROM EMP_AUDIT
+ORDER BY AUDIT_ID;
+
+
+-- =========================================================
+-- VERIFY TRIGGERS
+-- =========================================================
+
+SELECT TRIGGER_NAME, STATUS
+FROM USER_TRIGGERS
+WHERE TRIGGER_NAME IN
+(
+    'TRG_EMP_INSERT',
+    'TRG_EMP_UPDATE',
+    'TRG_EMP_DELETE'
+);
+
+
+-- =========================================================
+-- EXPECTED OUTPUT
+-- =========================================================
+
+/*
+
+EMPLOYEE TABLE
+
+EMP_ID   EMP_NAME   SALARY
+-------  ---------  ------
+101      ARUN       50000
+103      DIVYA      45000
+
+
+EMP_AUDIT TABLE
+
+AUDIT_ID   EMP_ID   ACTION_PERFORMED
+--------   ------   ----------------
+1          103      INSERT
+2          101      UPDATE
+3          102      DELETE
+
+
+TRIGGER STATUS
+
+TRIGGER_NAME       STATUS
+-----------------  -------
+TRG_EMP_INSERT     ENABLED
+TRG_EMP_UPDATE     ENABLED
+TRG_EMP_DELETE     ENABLED
+
+*/
+
+
+-- =========================================================
+-- :NEW AND :OLD
+-- =========================================================
+
+/*
+
+:NEW
+-----
+Refers to the new values during INSERT and UPDATE.
+
+:OLD
+-----
+Refers to the old values during DELETE and UPDATE.
+
+INSERT  -> :NEW
+UPDATE  -> :OLD and :NEW
+DELETE  -> :OLD
+
+*/
