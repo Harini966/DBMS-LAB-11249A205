@@ -1,0 +1,121 @@
+-- =========================================================
+-- PL/SQL BLOCK - POSITIVE, NEGATIVE OR ZERO
+-- OUTPUT STORED AND DISPLAYED IN A TABLE
+-- =========================================================
+
+SET SERVEROUTPUT ON;
+
+-- CREATE OUTPUT TABLE
+
+CREATE TABLE NUMBER_RESULT
+(
+    N NUMBER,
+    RESULT VARCHAR2(30)
+);
+
+-- OUTPUT:
+-- Table created.
+
+
+-- INSERT TEST VALUES
+
+INSERT INTO NUMBER_RESULT VALUES (25, NULL);
+INSERT INTO NUMBER_RESULT VALUES (-15, NULL);
+INSERT INTO NUMBER_RESULT VALUES (0, NULL);
+
+-- OUTPUT:
+-- 1 row created.
+-- 1 row created.
+-- 1 row created.
+
+
+-- PL/SQL BLOCK
+
+DECLARE
+    N NUMBER;
+BEGIN
+    -- Positive number
+    N := 25;
+
+    IF N > 0 THEN
+        UPDATE NUMBER_RESULT
+        SET RESULT = 'The number is Positive'
+        WHERE N = 25;
+
+    ELSIF N < 0 THEN
+        UPDATE NUMBER_RESULT
+        SET RESULT = 'The number is Negative'
+        WHERE N = 25;
+
+    ELSE
+        UPDATE NUMBER_RESULT
+        SET RESULT = 'The number is Zero'
+        WHERE N = 25;
+    END IF;
+
+
+    -- Negative number
+    N := -15;
+
+    IF N > 0 THEN
+        UPDATE NUMBER_RESULT
+        SET RESULT = 'The number is Positive'
+        WHERE N = -15;
+
+    ELSIF N < 0 THEN
+        UPDATE NUMBER_RESULT
+        SET RESULT = 'The number is Negative'
+        WHERE N = -15;
+
+    ELSE
+        UPDATE NUMBER_RESULT
+        SET RESULT = 'The number is Zero'
+        WHERE N = -15;
+    END IF;
+
+
+    -- Zero
+    N := 0;
+
+    IF N > 0 THEN
+        UPDATE NUMBER_RESULT
+        SET RESULT = 'The number is Positive'
+        WHERE N = 0;
+
+    ELSIF N < 0 THEN
+        UPDATE NUMBER_RESULT
+        SET RESULT = 'The number is Negative'
+        WHERE N = 0;
+
+    ELSE
+        UPDATE NUMBER_RESULT
+        SET RESULT = 'The number is Zero'
+        WHERE N = 0;
+    END IF;
+
+    COMMIT;
+END;
+/
+
+-- OUTPUT:
+-- PL/SQL procedure successfully completed.
+
+
+-- DISPLAY OUTPUT TABLE
+
+SELECT N AS INPUT_NUMBER,
+       RESULT AS OUTPUT
+FROM NUMBER_RESULT
+ORDER BY N DESC;
+
+-- =========================================================
+-- FINAL OUTPUT
+-- =========================================================
+--
+-- INPUT_NUMBER   OUTPUT
+-- ------------   --------------------------
+-- 25             The number is Positive
+-- -15            The number is Negative
+-- 0              The number is Zero
+--
+-- =========================================================
